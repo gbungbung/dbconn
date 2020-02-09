@@ -1,6 +1,10 @@
+#!/usr/bin/python3
+
 import sqlite3
 from sqlite3 import Error
-import sqls
+
+#Database file in a specific root folder.
+database = r"D:\Code\Projs\Others\dbconn\pydb.db"
 
 def create_connection(db):
     """create a database connection
@@ -25,13 +29,33 @@ def create_table(connection, create_sql):
     except Error as e:
         print(e)
 
-def create(connection, create_db):
-    """Create database from create_db param with sql code
-    :param connection, create_db:
-    """
-    database = r"D:\Code\Projs\Others\dbconn>pydb.db"
-    connected= create_connection(database)
-    if connected is not None:
-        create_table(connection, create_db)
+if __name__ == "__main__":
+
+    #Sql for testing purpose you change whichever you want.
+    #TODO: Separate the sql to other file
+    sql_create_projects_table=  """CREATE TABLE IF NOT EXISTS projects
+                            (
+                                id integer PRIMARY KEY,
+                                name text NOT NULL,
+                                begin_date text,
+                                end_date text
+                            );"""
+
+    sql_create_tasks_table= """CREATE TABLE IF NOT EXISTS tasks
+                                (
+                                    id integer PRIMARY KEY,
+                                    name text NOT NULL,
+                                    priority integer,
+                                    project_id integer NOT NULL,
+                                    start_date text NOT NULL,
+                                    end_date text NOT NULL,
+                                    FOREIGN KEY (project_id) REFERENCES projects(id)
+                                );
+                            """
+
+    #Connecting database and make sure connected, then create tables.
+    conn= create_connection(database)
+    if conn is not None:
+        create_table(conn, sql_create_projects_table)
     else:
-        print('Something went wrong!')
+        print('Database not connected!')
